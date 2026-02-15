@@ -1,0 +1,4 @@
+interface:
+  display_name: "Siyuan Note"
+  short_description: "Handle SiYuan note CRUD and structure edits safely"
+  default_prompt: "Use $siyuan-note to organize my SiYuan notes and update blocks safely."

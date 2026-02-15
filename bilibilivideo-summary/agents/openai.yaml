@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "B站视频总结"
+  short_description: "提炼B站视频核心观点、时间轴与结论"
+  default_prompt: "使用 $bilibilivideo-summary，先下载字幕再给出中文结构化总结。"

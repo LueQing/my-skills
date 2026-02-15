@@ -1,0 +1,1 @@
+使用了[GitHub - OpaqueGlass/syplugin-anMCPServer: A plugin that provide simple MCP service for Siyuan-note](https://github.com/OpaqueGlass/syplugin-anMCPServer)
