@@ -1,0 +1,4 @@
+interface:
+  display_name: "MATLAB 数学建模求解"
+  short_description: "使用MATLAB解决通用数学建模题并输出可运行脚本与结果分析"
+  default_prompt: "使用 $mcm-solver-matlab，用 MATLAB 求解这道数学建模题，并给出可运行脚本、图表建议和结果分析。"
