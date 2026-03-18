@@ -1,4 +1,4 @@
 interface:
   display_name: "Python 数学建模求解"
-  short_description: "默认启用subagent，交付Python notebook并结合案例参考求解数学建模题"
-  default_prompt: "使用 $mcm-solver-python，先参考内置 cases 的 problem 和 solutions，启用 subagent 完成模型准备，再用 Python 交付 `.ipynb`、图表建议和结果分析。"
+  short_description: "默认启用subagent，前期按需联动 asker-collector 汇集多方思路，确认后进入实现/运行/检验闭环，交付Python notebook并结合案例参考求解数学建模题"
+  default_prompt: "使用 $mcm-solver-python，先参考内置 cases 的 problem 和 solutions，并先判断是否适合联动 asker-collector；若适合，则先生成投喂内容、收集多方思路，再由主 agent 组织候选思路并等待用户确认。若用户明确不要联动，则直接走本地直通流程。确认思路后，再启用 subagent 进入 Python 实现、运行和检验，最终交付 `.ipynb`、图表建议和结果分析。"
