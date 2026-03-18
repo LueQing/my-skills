@@ -1,0 +1,4 @@
+interface:
+  display_name: "多站点回答收集整理"
+  short_description: "生成投喂 prompt，读取多个 AI 网页回答，并整理为 Markdown"
+  default_prompt: "使用 $asker-collector，为 Claude、Grok、ChatGPT 等网页 AI 生成可手动投喂的 prompts，或在回答完成后从浏览器读取多家结果并整理成 Markdown。"
