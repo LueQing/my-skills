@@ -1,4 +1,4 @@
 interface:
   display_name: "MATLAB 数学建模求解"
-  short_description: "使用MATLAB解决通用数学建模题并输出可运行脚本与结果分析"
-  default_prompt: "使用 $mcm-solver-matlab，用 MATLAB 求解这道数学建模题，并给出可运行脚本、图表建议和结果分析。"
+  short_description: "默认启用subagent，交付MATLAB notebook并结合案例参考求解数学建模题"
+  default_prompt: "使用 $mcm-solver-matlab，先参考内置 cases 的 problem 和 solutions，启用 subagent 完成模型准备，再用 MATLAB 交付 `.ipynb`、图表建议和结果分析。"
