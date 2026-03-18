@@ -1,6 +1,6 @@
 ---
 name: mcm-solver-python
-description: 使用 Python 求解通用数学建模问题，默认启用 subagent 协作，前期优先按需联动 `asker-collector` 汇集多方思路，但不强制；优先交付 Python `.ipynb` 以记录代码、运行结果与图表，并可基于 `cumcmthesis` 模板输出 LaTeX 论文。用户请求“用 Python 做数学建模”“写 Python 建模代码”“求解优化/预测/回归/微分方程/图论/评价/仿真题”“把建模题用 Python 实现并分析结果”“用 notebook 记录建模过程”“按数学建模论文模板生成 LaTeX”时使用。
+description: 使用 Python 求解通用数学建模问题，默认积极并行使用 subagent 协作，前期优先按需联动 `asker-collector` 汇集多方思路，但不强制；优先交付 Python `.ipynb` 以记录代码、运行结果与图表，并可基于 `cumcmthesis` 模板输出 LaTeX 论文。用户请求“用 Python 做数学建模”“写 Python 建模代码”“求解优化/预测/回归/微分方程/图论/评价/仿真题”“把建模题用 Python 实现并分析结果”“用 notebook 记录建模过程”“按数学建模论文模板生成 LaTeX”时使用。
 ---
 
 # mcm-solver-python
@@ -11,6 +11,7 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 
 - 优先使用 Python，而不是 MATLAB、R 或伪代码。
 - 先判断题型与数据需求，再写代码；不要在模型未定时直接堆代码。
+- 默认能并行就并行；除非任务极小或用户明确要求串行，否则优先拆分子任务并派发 subagent。
 - 默认交付 Python `.ipynb`，用于同时保存代码、运行结果、图表和分阶段实验记录；当用户需要更稳定的一键运行版本时，再补充 `.py`。
 - 当用户需要论文交付时，优先基于本技能内置的 `cumcmthesis` 模板组织 LaTeX 内容。
 - 把 `.ipynb` 视为“Python 代码的实验记录本”，用于保存中间输出、表格、图像和多轮试验结果。
@@ -80,17 +81,18 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 
 ## Subagent 并行策略
 
-- 默认启用 subagent，但拆分必须服务于当前阶段目标，不要把小任务机械拆碎。
-- 人类确认思路方向前，subagent 只能用于“思路准备”，不能提前产出最终 Python 实现、实验结论、运行结果或论文正文。
-- 人类确认思路方向后，subagent 可继续用于实现、运行、结果检验和论文整理。
+- 默认积极并行使用 subagent，先设计并行分工，再派发子任务。
+- 降级只限于超小任务、单文件微调、局部说明修订、局部 LaTeX 修订，或用户明确要求不要并行。
+- 人类确认思路方向前，subagent 只能用于“思路准备”，并且默认至少并行派发 3 个准备子任务。
+- 人类确认思路方向后，subagent 默认至少拆成 2 条线，优先让实现与运行/检验分离；中大型题默认扩展到 4 个方向。
 - 默认触发 subagent 的典型情形：
 - 需要并行完成案例阅读、模型择优和合理性校验，以支撑人类确认前的思路准备
 - 用户同时要求题意分析、Python 实现和论文整理
 - 题目附件较多，需要并行阅读数据、建模和实现
 - 既要当前题求解，又要参考案例或模板
 - 用户明确要求“并行”“subagent”“分工”
-- 若任务只是单一 Python 函数、单个模型说明、局部 LaTeX 修改或单文件修订，可以不启用 subagent。
-- 启用后，主 agent 先定总方案，再派发子任务；不要先并行、后补计划。
+- 若任务只是单一 Python 函数、单个模型说明、局部 LaTeX 修改或单文件修订，才允许不启用或少启用 subagent。
+- 启用后，主 agent 先定总方案和并行边界，再派发子任务；不要先并行、后补计划。
 - 详细分工协议见 `references/subagent-orchestration.md`。
 
 ## Subagent 默认分工
@@ -141,6 +143,7 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 - 合并冲突结论
 - 做最终一致性检查
 - 输出最终文件或最终答复
+- 显式汇总各 subagent 的产出，让使用者能看见并行分工带来的贡献。
 - 若 subagent 之间结论冲突，以主 agent 基于题目、数据和 Python 结果做最终裁决。
 
 ## 确认前默认 Subagent 调度模板
@@ -158,7 +161,7 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 - 主 agent 默认先读取：
 - `assets/cases/2023a-a/problem/`
 - `assets/cases/2023a-a/solutions/`
-- 然后主 agent 视任务复杂度决定是否联动 `asker-collector`；如果联动，先生成投喂内容并收集多方回答，再进入下列确认前 subagent：
+- 然后主 agent 默认先设计并行分工；若任务适合多方思路收集，则条件联动 `asker-collector`，同时并行派发下列确认前 subagent：
 - `范例阅读 subagent`
 - `模型择优 subagent`
 - `合理性校验 subagent`
@@ -218,7 +221,7 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 
 ### 主 agent 汇总模板
 
-- 主 agent 收到三个 subagent 输出后，应整理为：
+- 主 agent 收到各 subagent 输出后，应整理为：
 
 ```markdown
 # 关键词与思路路由
@@ -235,6 +238,14 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 - 主要共识：
 - 主要分歧：
 - 综合结论：
+
+# Subagent 产出摘要
+- `范例阅读 subagent`：
+- `模型择优 subagent`：
+- `合理性校验 subagent`：
+- `Python 实现 subagent`：
+- `Python 运行 subagent`：
+- `Python 检验 subagent`：
 
 # 案例参考
 - 可借鉴的题型/结构：
@@ -266,12 +277,13 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 ## 继续分工规则
 
 - 仅当一级 subagent 自身任务仍明显过大，且继续分工后的职责边界清晰时，才允许继续分工。
-- 不允许为了“看起来很并行”而机械拆分。
+- 默认先并行再收敛，但不允许为了“看起来很并行”而机械拆分。
 - 推荐的二级拆分方式：
 - `Python 实现` -> `数据处理` + `核心求解` + `可视化/实验记录`
 - `实现` -> `编码` + `运行准备`
 - `运行` -> `批量执行` + `失败复查`
 - `检验` -> `结果核对` + `边界与复现性检查`
+- 中大型题 -> `数据处理` + `核心求解` + `可视化/实验记录` + `结果检验`
 - `论文整理` -> `结构与摘要` + `图表表格落版`
 - `题意/建模` 一般不继续拆分；仅当题目天然分成多个相对独立子问题时再拆。
 - 继续分工后，下级 subagent 仍只负责自己的局部产物；整合权始终回到上级或主 agent。
@@ -346,6 +358,10 @@ description: 使用 Python 求解通用数学建模问题，默认启用 subagen
 - 是否接受推荐思路：<待确认/是/否>
 - 是否改用备选思路：<待确认/思路名/否>
 - 额外约束或偏好：<待补充/内容>
+
+# Subagent 产出摘要
+- <子任务 1 的高层结论>
+- <子任务 2 的高层结论>
 
 # 问题类型判断
 - <题型>
